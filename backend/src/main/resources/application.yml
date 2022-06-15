@@ -1,0 +1,21 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: backend
+  data:
+    mongodb:
+      username: admin
+      password: admin
+      database: oneclick
+      port: 27017
+      host: localhost
+      auto-index-creation: true
+      authentication-database: admin
+auth:
+  secret: topsecretlinetopsecretlinetopsecretlinetopsecretline
+  accessTokenExpiresAfterSeconds: 43200
+  headerName: Authorization
+  tokenPrefix: Bearer

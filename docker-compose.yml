@@ -1,0 +1,62 @@
+version: '3.8'
+services:
+  backend:
+    restart: unless-stopped
+    container_name: oneclick_backend
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    networks:
+      - mongo-network
+      - general
+  frontend:
+    container_name: oneclick_frontend
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend/src:/app/src
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - mongo
+    networks:
+      - general
+  mongo:
+    restart: unless-stopped
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: oneclick
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./backend/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - mongo-network
+  mongo-express:
+    restart: unless-stopped
+    image: mongo-express:latest
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: "27017"
+    ports:
+      - "8081:8081"
+    networks:
+      - mongo-network
+    depends_on:
+      - mongo
+
+networks:
+  mongo-network:
+    driver: bridge
+  general:
+    driver: bridge
